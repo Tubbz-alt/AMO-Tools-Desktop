@@ -23,6 +23,7 @@ import { EnergyUseFormComponent } from './standalone-opportunity-sheet/energy-us
 import { FormsModule } from '@angular/forms';
 import { SteamReductionModule } from '../../calculator/utilities/steam-reduction/steam-reduction.module';
 import { PipeInsulationReductionModule } from '../../calculator/utilities/pipe-insulation-reduction/pipe-insulation-reduction.module';
+import { AirLeakModule } from '../../calculator/compressed-air/air-leak/air-leak.module';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { PipeInsulationReductionModule } from '../../calculator/utilities/pipe-i
     CompressedAirReductionModule,
     WaterReductionModule,
     CompressedAirPressureReductionModule,
+    AirLeakModule,
     LightingReplacementModule,
     FormsModule,
     SteamReductionModule,

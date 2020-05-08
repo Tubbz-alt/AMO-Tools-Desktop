@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { LightingReplacementService } from '../../calculator/lighting/lighting-replacement/lighting-replacement.service';
-import { LightingReplacementTreasureHunt, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, OpportunitySheet, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt } from '../../shared/models/treasure-hunt';
+import { LightingReplacementTreasureHunt, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, OpportunitySheet, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt, AirLeakSurveyTreasureHunt } from '../../shared/models/treasure-hunt';
 import { ReplaceExistingService } from '../../calculator/motors/replace-existing/replace-existing.service';
 import { MotorDriveService } from '../../calculator/motors/motor-drive/motor-drive.service';
 import { NaturalGasReductionService } from '../../calculator/utilities/natural-gas-reduction/natural-gas-reduction.service';
@@ -12,6 +12,7 @@ import { WaterReductionService } from '../../calculator/utilities/water-reductio
 import { OpportunitySheetService } from './standalone-opportunity-sheet/opportunity-sheet.service';
 import { SteamReductionService } from '../../calculator/utilities/steam-reduction/steam-reduction.service';
 import { PipeInsulationReductionService } from '../../calculator/utilities/pipe-insulation-reduction/pipe-insulation-reduction.service';
+import { AirLeakService } from '../../calculator/compressed-air/air-leak/air-leak.service';
 
 @Injectable()
 export class CalculatorsService {
@@ -24,7 +25,7 @@ export class CalculatorsService {
     private motorDriveService: MotorDriveService, private naturalGasReductionService: NaturalGasReductionService, private electricityReductionService: ElectricityReductionService,
     private compressedAirReductionService: CompressedAirReductionService, private compressedAirPressureReductionService: CompressedAirPressureReductionService,
     private waterReductionService: WaterReductionService, private opportunitySheetService: OpportunitySheetService, private steamReductionService: SteamReductionService,
-    private pipeInsulationReductionService: PipeInsulationReductionService) {
+    private pipeInsulationReductionService: PipeInsulationReductionService, private airLeakService: AirLeakService) {
     this.selectedCalc = new BehaviorSubject<string>('none');
   }
   cancelCalc() {
@@ -180,6 +181,28 @@ export class CalculatorsService {
     this.compressedAirReductionService.baselineData = undefined;
     this.compressedAirReductionService.modificationData = undefined;
     this.cancelCalc();
+  }
+  //  air leak
+  cancelAirLeakSurvey() {
+    this.calcOpportunitySheet = undefined;
+    this.airLeakService.baselineData = undefined;
+    this.airLeakService.modificationData = undefined;
+    this.cancelCalc();
+  }
+  addNewAirleak() {
+    this.calcOpportunitySheet = undefined;
+    this.airLeakService.baselineData = undefined;
+    this.airLeakService.modificationData = undefined;
+    this.isNewOpportunity = true;
+    this.selectedCalc.next('air-leak');
+  }
+  editAirLeak(airLeak: AirLeakSurveyTreasureHunt, index: number) {
+    this.calcOpportunitySheet = airLeak.opportunitySheet;
+    this.airLeakService.baselineData = airLeak.baseline;
+    this.airLeakService.modificationData = airLeak.modification;
+    this.itemIndex = index;
+    this.isNewOpportunity = false;
+    this.selectedCalc.next('air-leak');
   }
   //compressed air pressure
   addNewCompressedAirPressureReductions() {

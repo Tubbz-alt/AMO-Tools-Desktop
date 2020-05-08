@@ -56,9 +56,13 @@ export class FindTreasureComponent implements OnInit {
   selectElectricityReduction(){
     this.calculatorsService.addNewElectricityReduction();
   }
-
+  
   selectCompressedAirReduction(){
     this.calculatorsService.addNewCompressedAirReduction();
+  }
+
+  selectAirLeakSurvey(){
+    this.calculatorsService.addNewAirleak();
   }
 
   selectCompressedAirPressureReduction(){

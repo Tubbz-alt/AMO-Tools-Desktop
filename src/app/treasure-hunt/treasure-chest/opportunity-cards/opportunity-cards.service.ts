@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TreasureHunt, LightingReplacementTreasureHunt, OpportunitySheet, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, EnergyUsage, OpportunitySheetResults, OpportunitySummary, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt } from '../../../shared/models/treasure-hunt';
+import { TreasureHunt, LightingReplacementTreasureHunt, OpportunitySheet, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, EnergyUsage, OpportunitySheetResults, OpportunitySummary, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt, AirLeakSurveyTreasureHunt } from '../../../shared/models/treasure-hunt';
 import *  as _ from 'lodash';
 import { Settings } from '../../../shared/models/settings';
 import { OpportunitySheetService } from '../../calculators/standalone-opportunity-sheet/opportunity-sheet.service';
@@ -513,6 +513,59 @@ export class OpportunityCardsService {
     return cardData;
   }
 
+  getCompressedAirLeakSurveys(compressedAirLeakSurveys: Array<AirLeakSurveyTreasureHunt>, currentEnergyUsage: EnergyUsage, settings: Settings): Array<OpportunityCardData> {
+    let opportunityCardsData: Array<OpportunityCardData> = new Array();
+    if (compressedAirLeakSurveys) {
+      let index: number = 0;
+      compressedAirLeakSurveys.forEach(reduction => {
+        let cardData: OpportunityCardData = this.getCompressedAirLeakSurveyCardData(reduction, settings, currentEnergyUsage, index);
+        opportunityCardsData.push(cardData);
+        index++;
+      });
+    }
+    return opportunityCardsData;
+  }
+
+  getCompressedAirLeakSurveyCardData(airLeak: AirLeakSurveyTreasureHunt, settings: Settings, currentEnergyUsage: EnergyUsage, index: number): OpportunityCardData {
+    // let results: CompressedAirReductionResults = this.compressedAirReductionService.getResults(settings, reduction.baseline, reduction.modification);
+    let opportunitySummary: OpportunitySummary = this.opportunitySummaryService.getCompressedAirLeakSurveySummary(airLeak, index, settings);
+    let utilityCost: number = currentEnergyUsage.compressedAirCosts;
+    let unitStr: string = 'kSCF'
+    //electricity utility
+    if (airLeak.baseline[0].utilityType == 1) {
+      utilityCost = currentEnergyUsage.electricityCosts;
+      unitStr = 'kWh'
+    } else if (settings.unitsOfMeasure == 'Metric') {
+      unitStr = 'Nm3'
+    }
+    let cardData: OpportunityCardData = {
+      implementationCost: opportunitySummary.totalCost,
+      paybackPeriod: opportunitySummary.payback,
+      selected: airLeak.selected,
+      opportunityType: 'air-leak',
+      opportunityIndex: index,
+      annualCostSavings: opportunitySummary.costSavings,
+      annualEnergySavings: [{
+        savings: opportunitySummary.totalEnergySavings,
+        energyUnit: unitStr,
+        label: opportunitySummary.utilityType
+      }],
+      utilityType: [opportunitySummary.utilityType],
+      percentSavings: [{
+        percent: this.getPercentSavings(opportunitySummary.costSavings, utilityCost),
+        label: opportunitySummary.utilityType,
+        baselineCost: opportunitySummary.baselineCost,
+        modificationCost: opportunitySummary.modificationCost,
+      }],
+      airLeakSurvey: airLeak,
+      name: opportunitySummary.opportunityName,
+      opportunitySheet: airLeak.opportunitySheet,
+      iconString: 'assets/images/calculator-icons/utilities-icons/compressed-air-reduction-icon.png',
+      teamName: this.getTeamName(airLeak.opportunitySheet)
+    };
+    return cardData;
+  }
+
   //compressedAirPressureReductions
   getCompressedAirPressureReductions(compressedAirPressureReductions: Array<CompressedAirPressureReductionTreasureHunt>, currentEnergyUsage: EnergyUsage, settings: Settings): Array<OpportunityCardData> {
     let opportunityCardsData: Array<OpportunityCardData> = new Array();
@@ -782,6 +835,7 @@ export interface OpportunityCardData {
   electricityReduction?: ElectricityReductionTreasureHunt;
   compressedAirReduction?: CompressedAirReductionTreasureHunt;
   compressedAirPressureReduction?: CompressedAirPressureReductionTreasureHunt;
+  airLeakSurvey?: AirLeakSurveyTreasureHunt;
   waterReduction?: WaterReductionTreasureHunt;
   steamReduction?: SteamReductionTreasureHunt;
   pipeInsulationReduction?: PipeInsulationReductionTreasureHunt;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { OpportunitySheetService } from '../calculators/standalone-opportunity-sheet/opportunity-sheet.service';
-import { OpportunityCost, OpportunitySummary, TreasureHunt, ElectricityReductionTreasureHunt, MotorDriveInputsTreasureHunt, ReplaceExistingMotorTreasureHunt, LightingReplacementTreasureHunt, NaturalGasReductionTreasureHunt, OpportunitySheetResults, OpportunitySheet, CompressedAirReductionTreasureHunt, WaterReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt } from '../../shared/models/treasure-hunt';
+import { OpportunityCost, OpportunitySummary, TreasureHunt, ElectricityReductionTreasureHunt, MotorDriveInputsTreasureHunt, ReplaceExistingMotorTreasureHunt, LightingReplacementTreasureHunt, NaturalGasReductionTreasureHunt, OpportunitySheetResults, OpportunitySheet, CompressedAirReductionTreasureHunt, WaterReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt, AirLeakSurveyTreasureHunt } from '../../shared/models/treasure-hunt';
 import { Settings } from '../../shared/models/settings';
 import { LightingReplacementService } from '../../calculator/lighting/lighting-replacement/lighting-replacement.service';
 import { LightingReplacementResults } from '../../shared/models/lighting';
@@ -15,6 +15,7 @@ import { WaterReductionService } from '../../calculator/utilities/water-reductio
 import { CompressedAirPressureReductionService } from '../../calculator/utilities/compressed-air-pressure-reduction/compressed-air-pressure-reduction.service';
 import { SteamReductionService } from '../../calculator/utilities/steam-reduction/steam-reduction.service';
 import { PipeInsulationReductionService } from '../../calculator/utilities/pipe-insulation-reduction/pipe-insulation-reduction.service';
+import { AirLeakService } from '../../calculator/compressed-air/air-leak/air-leak.service';
 
 @Injectable()
 export class OpportunitySummaryService {
@@ -23,7 +24,7 @@ export class OpportunitySummaryService {
     private replaceExistingService: ReplaceExistingService, private motorDriveService: MotorDriveService, private electricityReductionService: ElectricityReductionService,
     private naturalGasReductionService: NaturalGasReductionService, private compressedAirReductionService: CompressedAirReductionService,
     private waterReductionService: WaterReductionService, private compressedAirPressureReductionService: CompressedAirPressureReductionService,
-    private steamReductionService: SteamReductionService, private pipeInsulationReductionService: PipeInsulationReductionService) { }
+    private steamReductionService: SteamReductionService, private pipeInsulationReductionService: PipeInsulationReductionService, private airLeakService: AirLeakService) { }
 
   getOpportunitySummaries(treasureHunt: TreasureHunt, settings: Settings): Array<OpportunitySummary> {
     let opportunitySummaries: Array<OpportunitySummary> = new Array<OpportunitySummary>();
@@ -246,6 +247,26 @@ export class OpportunitySummaryService {
     }
     let oppSummary: OpportunitySummary;
     if (compressedAirReduction.baseline[0].utilityType == 0) {
+      oppSummary = this.getNewOpportunitySummary(name, 'Compressed Air', results.annualCostSavings, results.annualEnergySavings, opportunityCost, results.baselineResults.energyCost, results.modificationResults.energyCost);
+    }
+    else {
+      oppSummary = this.getNewOpportunitySummary(name, 'Electricity', results.annualCostSavings, results.annualEnergySavings, opportunityCost, results.baselineResults.energyCost, results.modificationResults.energyCost);
+    }
+    return oppSummary;
+  }
+
+  getCompressedAirLeakSurveySummary(airLeakSurvey: AirLeakSurveyTreasureHunt, index: number, settings: Settings): OpportunitySummary {
+    let name: string = 'Compressed Air Reduction #' + index;
+    let results: AirLeakSurveyResult = this.airLeakService.getResults(settings, airLeakSurvey.baseline, airLeakSurvey.modification);
+    let opportunityCost: OpportunityCost;
+    if (airLeakSurvey.opportunitySheet) {
+      if (airLeakSurvey.opportunitySheet.name) {
+        name = airLeakSurvey.opportunitySheet.name;
+      }
+      opportunityCost = airLeakSurvey.opportunitySheet.opportunityCost;
+    }
+    let oppSummary: OpportunitySummary;
+    if (airLeakSurvey.baseline[0].utilityType == 0) {
       oppSummary = this.getNewOpportunitySummary(name, 'Compressed Air', results.annualCostSavings, results.annualEnergySavings, opportunityCost, results.baselineResults.energyCost, results.modificationResults.energyCost);
     }
     else {

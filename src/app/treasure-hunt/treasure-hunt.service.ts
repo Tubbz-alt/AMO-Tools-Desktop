@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { OpportunitySheet, TreasureHunt, LightingReplacementTreasureHunt, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt } from '../shared/models/treasure-hunt';
+import { OpportunitySheet, TreasureHunt, LightingReplacementTreasureHunt, ReplaceExistingMotorTreasureHunt, MotorDriveInputsTreasureHunt, NaturalGasReductionTreasureHunt, ElectricityReductionTreasureHunt, CompressedAirReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, WaterReductionTreasureHunt, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt, AirLeakSurveyTreasureHunt } from '../shared/models/treasure-hunt';
 import { OpportunityCardsService, OpportunityCardData } from './treasure-chest/opportunity-cards/opportunity-cards.service';
 import { Settings } from '../shared/models/settings';
 
@@ -173,6 +173,29 @@ export class TreasureHuntService {
     treasureHunt.compressedAirReductions.splice(index, 1);
     this.treasureHunt.next(treasureHunt);
   }
+
+  // air leak
+  addNewAirLeakSurveyItem(airLeakSurveyItem: AirLeakSurveyTreasureHunt) {
+    let treasureHunt: TreasureHunt = this.treasureHunt.value;
+    if (!treasureHunt.airLeakSurveys) {
+      treasureHunt.airLeakSurveys = new Array();
+    }
+    treasureHunt.airLeakSurveys.push(airLeakSurveyItem);
+    this.treasureHunt.next(treasureHunt);
+  }
+  editAirLeakSurveyItem(airLeakSurveyItem: AirLeakSurveyTreasureHunt, index: number, settings: Settings) {
+    let treasureHunt: TreasureHunt = this.treasureHunt.value;
+    treasureHunt.airLeakSurveys[index] = airLeakSurveyItem;
+    let updatedCard: OpportunityCardData = this.opportunityCardsService.getCompressedAirLeakSurveyCardData(airLeakSurveyItem, settings, treasureHunt.currentEnergyUsage, index);
+    this.opportunityCardsService.updatedOpportunityCard.next(updatedCard);
+    this.treasureHunt.next(treasureHunt);
+  }
+  deleteAirLeakSurveyItem(index: number) {
+    let treasureHunt: TreasureHunt = this.treasureHunt.value;
+    treasureHunt.airLeakSurveys.splice(index, 1);
+    this.treasureHunt.next(treasureHunt);
+  }
+
   // compressedAirPressureReductions
   addNewCompressedAirPressureReductionsItem(compressedAirPressureReductionsItem: CompressedAirPressureReductionTreasureHunt) {
     let treasureHunt: TreasureHunt = this.treasureHunt.value;

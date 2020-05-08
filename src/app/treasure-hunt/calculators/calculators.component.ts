@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { CalculatorsService } from './calculators.service';
 import { Subscription } from 'rxjs';
-import { TreasureHunt, LightingReplacementTreasureHunt, WaterReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, CompressedAirReductionTreasureHunt, ElectricityReductionTreasureHunt, NaturalGasReductionTreasureHunt, MotorDriveInputsTreasureHunt, ReplaceExistingMotorTreasureHunt, OpportunitySheet, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt } from '../../shared/models/treasure-hunt';
+import { TreasureHunt, LightingReplacementTreasureHunt, WaterReductionTreasureHunt, CompressedAirPressureReductionTreasureHunt, CompressedAirReductionTreasureHunt, ElectricityReductionTreasureHunt, NaturalGasReductionTreasureHunt, MotorDriveInputsTreasureHunt, ReplaceExistingMotorTreasureHunt, OpportunitySheet, SteamReductionTreasureHunt, PipeInsulationReductionTreasureHunt, AirLeakSurveyTreasureHunt } from '../../shared/models/treasure-hunt';
 import { Settings } from '../../shared/models/settings';
 import { TreasureHuntService } from '../treasure-hunt.service';
 import { ModalDirective } from 'ngx-bootstrap';
@@ -25,6 +25,7 @@ export class CalculatorsComponent implements OnInit {
   naturalGasReductionTreasureHunt: NaturalGasReductionTreasureHunt;
   electricityReduction: ElectricityReductionTreasureHunt;
   compressedAirReduction: CompressedAirReductionTreasureHunt;
+  airLeakSurvey: AirLeakSurveyTreasureHunt;
   compressedAirPressureReduction: CompressedAirPressureReductionTreasureHunt;
   waterReduction: WaterReductionTreasureHunt;
   standaloneOpportunitySheet: OpportunitySheet;
@@ -105,6 +106,8 @@ export class CalculatorsComponent implements OnInit {
       this.confirmSaveSteamReduction();
     } else if (this.selectedCalc == 'pipe-insulation-reduction') {
       this.confirmPipeInsulationReduction();
+    } else if (this.selectedCalc == 'air-leak') {
+      this.confirmAirLeakSurvey();
     }
   }
   initSaveCalc() {
@@ -230,6 +233,26 @@ export class CalculatorsComponent implements OnInit {
       this.treasureHuntService.addNewCompressedAirReductionsItem(this.compressedAirReduction);
     } else {
       this.treasureHuntService.editCompressedAirReductionsItem(this.compressedAirReduction, this.calculatorsService.itemIndex, this.settings);
+    }
+    this.finishSaveCalc();
+  }
+
+  cancelAirLeakSurvey() {
+    this.calculatorsService.cancelAirLeakSurvey();
+  }
+
+  saveAirLeakSurvey(airLeakSurvey: AirLeakSurveyTreasureHunt) {
+    this.airLeakSurvey = airLeakSurvey;
+    this.initSaveCalc();
+  }
+
+  confirmAirLeakSurvey() {
+    this.airLeakSurvey.opportunitySheet = this.calculatorOpportunitySheet;
+    this.airLeakSurvey.selected = true;
+    if (this.calculatorsService.isNewOpportunity == true) {
+      this.treasureHuntService.addNewAirLeakSurveyItem(this.airLeakSurvey);
+    } else {
+      this.treasureHuntService.editAirLeakSurveyItem(this.airLeakSurvey, this.calculatorsService.itemIndex, this.settings);
     }
     this.finishSaveCalc();
   }

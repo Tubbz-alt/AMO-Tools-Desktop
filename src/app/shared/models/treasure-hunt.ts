@@ -1,7 +1,7 @@
 import { LightingReplacementData } from "./lighting";
 import { OperatingHours } from "./operations";
 import { ReplaceExistingData, MotorDriveInputs } from "./calculators";
-import { NaturalGasReductionData, ElectricityReductionData, CompressedAirReductionData, WaterReductionData, CompressedAirPressureReductionData, SteamReductionData, PipeInsulationReductionInput } from "./standalone";
+import { NaturalGasReductionData, ElectricityReductionData, CompressedAirReductionData, WaterReductionData, CompressedAirPressureReductionData, SteamReductionData, PipeInsulationReductionInput, AirLeakSurveyData, AirLeakSurveyResult } from "./standalone";
 
 export interface TreasureHunt {
     name: string,
@@ -12,6 +12,7 @@ export interface TreasureHunt {
     naturalGasReductions?: Array<NaturalGasReductionTreasureHunt>;
     electricityReductions?: Array<ElectricityReductionTreasureHunt>;
     compressedAirReductions?: Array<CompressedAirReductionTreasureHunt>;
+    airLeakSurveys?: Array<AirLeakSurveyTreasureHunt>;
     compressedAirPressureReductions?: Array<CompressedAirPressureReductionTreasureHunt>;
     waterReductions?: Array<WaterReductionTreasureHunt>;
     steamReductions?: Array<SteamReductionTreasureHunt>;
@@ -120,6 +121,13 @@ export interface ElectricityReductionTreasureHunt {
 export interface CompressedAirReductionTreasureHunt {
     baseline: Array<CompressedAirReductionData>;
     modification: Array<CompressedAirReductionData>;
+    opportunitySheet?: OpportunitySheet;
+    selected?: boolean;
+}
+
+export interface AirLeakSurveyTreasureHunt {
+    baseline: Array<AirLeakSurveyData>;
+    modification: Array<AirLeakSurveyData>;
     opportunitySheet?: OpportunitySheet;
     selected?: boolean;
 }
